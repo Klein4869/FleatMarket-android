@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Fleatmarkert</string>
+    <string name="themeList">商品列表</string>
+    <string name="loginMessage">请登录</string>
+    <string name="postManageButton">商品管理</string>
+    <string name="registMessage">请填入注册信息</string>
+</resources>
