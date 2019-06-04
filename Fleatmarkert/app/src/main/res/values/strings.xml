@@ -4,4 +4,9 @@
     <string name="loginMessage">请登录</string>
     <string name="postManageButton">商品管理</string>
     <string name="registMessage">请填入注册信息</string>
+    <string name="usernameMessage">用户名</string>
+    <string name="passwordMessage">密码</string>
+    <string name="signInButton">登录</string>
+    <string name="signUpButton">注册</string>
+    <string name="repasswordMessage">再输入密码</string>
 </resources>
