@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 lastClickTime=System.currentTimeMillis();
-                ServerSocket ss = null;
                 String username = ((EditText) findViewById(R.id.usernameText)).getText().toString();
                 String password = ((EditText) findViewById(R.id.passwordText)).getText().toString();
                 if (!username.equals("") && !password.equals("")) {
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     EditText editText1 = (EditText) findViewById(R.id.passwordText);
                     String password = data.getExtras().getString("password");
                     if (password != null)
-                        editText1.setText(username);
+                        editText1.setText(password);
                 } catch (NullPointerException e){
                     e.printStackTrace();
                 }
