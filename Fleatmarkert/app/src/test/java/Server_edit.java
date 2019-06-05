@@ -11,9 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Server_delete {
+public class Server_edit {
     public static void main(String[] args) {
-        while (true){
+        while (true) {
             listen();
         }
     }
@@ -26,7 +26,7 @@ public class Server_delete {
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("成功加载数据库驱动程序");
             conn = DriverManager.getConnection(url);
-            ss = new ServerSocket(8085);
+            ss = new ServerSocket(8087);
             Socket s1 = ss.accept();
             OutputStream os = s1.getOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
@@ -36,23 +36,29 @@ public class Server_delete {
 
             System.out.println("进入监听");
             while (true) {
-                String id_String = dis.readUTF();
-                int id = Integer.parseInt(id_String);
+                String id = dis.readUTF();
+                String title = dis.readUTF();
+                String content = dis.readUTF();
                 System.out.println(id);
+                System.out.println(title);
+                System.out.println(content);
 
                 Statement statement = conn.createStatement();
                 String sql = "use Users;";
                 statement.execute(sql);
 
-                sql = "delete from posts where id ="+ id +";";
+                sql = "update posts set title='" + title + "' where id=" + id + ";";
                 int result = statement.executeUpdate(sql);
-                if (result>0){
-                    System.out.println("删除成功");
+                sql = "update posts set content='" + content + "' where id=" + id + ";";
+                int result2 = statement.executeUpdate(sql);
+                if (result != 0 && result2 != 0){
                     dos.writeUTF("True");
+                    System.out.println("修改成功");
                 } else {
-                    System.out.println("删除失败");
                     dos.writeUTF("False");
+                    System.out.println("修改失败");
                 }
+
             }
 
         } catch (IOException e) {

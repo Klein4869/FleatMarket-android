@@ -16,4 +16,5 @@
     <string name="submitMessage">提交</string>
     <string name="deleteMessage">删除</string>
     <string name="showMessage">查看</string>
+    <string name="editMessage">编辑</string>
 </resources>

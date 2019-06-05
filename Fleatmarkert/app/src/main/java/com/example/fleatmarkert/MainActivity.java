@@ -19,6 +19,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
+    private long lastClickTime = 0;
+    private static final long FAST_CLICK_TIME = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,23 +33,31 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent intent1 = new Intent();
         intent1.setClass(MainActivity.this, PostListActivity.class);
-        Button button1 = (Button) findViewById(R.id.signInButton);
+        final Button button1 = (Button) findViewById(R.id.signInButton);
         /*
         设置登录按钮的行为
          */
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis()-lastClickTime<FAST_CLICK_TIME){
+                    return;
+                }
+                lastClickTime=System.currentTimeMillis();
                 ServerSocket ss = null;
-                boolean isCheck = verifyLogin(((EditText) findViewById(R.id.usernameText)).getText().toString(), ((EditText) findViewById(R.id.passwordText)).getText().toString());
-                if (isCheck) {
-                    intent1.putExtra("username",((EditText) findViewById(R.id.usernameText)).getText().toString());
-                    MainActivity.this.startActivity(intent1);
-                    MainActivity.this.finish();
+                String username = ((EditText) findViewById(R.id.usernameText)).getText().toString();
+                String password = ((EditText) findViewById(R.id.passwordText)).getText().toString();
+                if (!username.equals("") && !password.equals("")) {
+                    boolean isCheck = verifyLogin(username, password);
+                    if (isCheck) {
+                        intent1.putExtra("username", ((EditText) findViewById(R.id.usernameText)).getText().toString());
+                        MainActivity.this.startActivity(intent1);
+                        MainActivity.this.finish();
+                    }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("提示");
-                    builder.setMessage("登录失败");
+                    builder.setMessage("用户名或密码不可为空");
                     builder.setPositiveButton("确认", null);
                     builder.show();
                 }
@@ -56,13 +66,17 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent intent2 = new Intent();
         intent2.setClass(MainActivity.this, RegistActivity.class);
-        Button button2 = (Button) findViewById(R.id.signUpButton);
+        final Button button2 = (Button) findViewById(R.id.signUpButton);
         /*
         设置注册按钮的行为
          */
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis()-lastClickTime<FAST_CLICK_TIME){
+                    return;
+                }
+                lastClickTime=System.currentTimeMillis();
                 MainActivity.this.startActivityForResult(intent2, 1);
             }
         });
@@ -118,10 +132,20 @@ public class MainActivity extends AppCompatActivity {
             if (info.equals("True")){
                 return true;
             } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("提示");
+                builder.setMessage("密码错误或找不到此用户");
+                builder.setPositiveButton("确认", null);
+                builder.show();
                 return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("连接失败");
+            builder.setPositiveButton("确认", null);
+            builder.show();
             return false;
         } finally {
             try {

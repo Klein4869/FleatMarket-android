@@ -28,8 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loginText"
-        android:background="@drawable/bc">
+        app:layout_constraintTop_toBottomOf="@id/loginText">
 
         <ListView
             android:id="@+id/postListView"

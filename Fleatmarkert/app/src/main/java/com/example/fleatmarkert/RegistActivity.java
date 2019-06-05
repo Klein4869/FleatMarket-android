@@ -18,20 +18,27 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class RegistActivity extends AppCompatActivity {
+    private long lastClickTime = 0;
+    private static final long FAST_CLICK_TIME = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
-        Button button = (Button) findViewById(R.id.registButton);
+        final Button button = (Button) findViewById(R.id.registButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis()-lastClickTime<FAST_CLICK_TIME){
+                    return;
+                }
+                lastClickTime=System.currentTimeMillis();
                 String username = ((EditText) findViewById(R.id.rusernameText)).getText().toString();
                 String password = ((EditText) findViewById(R.id.rpasswordText)).getText().toString();
-                if (!username.equals("") && !password.equals("")) {
-                    boolean isCheck = signUpCheck(username, password, ((EditText) findViewById(R.id.repasswordText)).getText().toString());
+                String repassword = ((EditText) findViewById(R.id.repasswordText)).getText().toString();
+                if (!username.equals("") && !password.equals("") && !repassword.equals("")) {
+                    boolean isCheck = signUpCheck(username, password, repassword);
 
                     if (isCheck) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
@@ -44,15 +51,9 @@ public class RegistActivity extends AppCompatActivity {
                         intent.putExtra("password", password);
                         setResult(1, intent);
                         RegistActivity.this.finish();
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
-                        builder.setTitle("提示");
-                        builder.setMessage("注册失败，用户名重复，请重新输入");
-                        builder.setPositiveButton("确认", null);
-                        builder.show();
                     }
                 } else {
-                    new AlertDialog.Builder(RegistActivity.this).setTitle("提示").setMessage("用户名和密码都不可为空!").setPositiveButton("确定",null);
+                    new AlertDialog.Builder(RegistActivity.this).setTitle("提示").setMessage("用户名和密码都不可为空!").setPositiveButton("确定",null).show();
                 }
 
             }
@@ -86,6 +87,11 @@ public class RegistActivity extends AppCompatActivity {
 
         } catch (IOException e) {
             e.printStackTrace();
+            AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("连接超时");
+            builder.setPositiveButton("确认", null);
+            builder.show();
             return false;
         } finally {
             try {

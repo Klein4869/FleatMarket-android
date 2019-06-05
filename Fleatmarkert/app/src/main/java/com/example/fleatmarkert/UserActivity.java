@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class UserActivity extends AppCompatActivity {
+    private long lastClickTime = 0;
+    private static final long FAST_CLICK_TIME = 500;
+
     String username;
 
     @Override
@@ -26,10 +29,14 @@ public class UserActivity extends AppCompatActivity {
         String displayer = "您好，"+username;
         textView.setText(displayer);
 
-        Button button = (Button)findViewById(R.id.postManageButton);
+        final Button button = (Button)findViewById(R.id.postManageButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis()-lastClickTime<FAST_CLICK_TIME){
+                    return;
+                }
+                lastClickTime=System.currentTimeMillis();
                 Intent intent = new Intent();
                 intent.setClass(UserActivity.this, PostManageActivity.class);
                 intent.putExtra("username",username);

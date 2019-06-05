@@ -21,6 +21,8 @@ import java.util.ArrayList;
 public class PostListActivity extends AppCompatActivity {
 
     String username;
+    private long lastClickTime = 0;
+    private static final int FAST_CLICK_TIME=500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +37,14 @@ public class PostListActivity extends AppCompatActivity {
 
         getTitles();
 
-        Button button = (Button)findViewById(R.id.toManageButton);
+        final Button button = (Button)findViewById(R.id.toManageButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis()-lastClickTime<FAST_CLICK_TIME){
+                    return;
+                }
+                lastClickTime=System.currentTimeMillis();
                 Intent intent = new Intent();
                 intent.setClass(PostListActivity.this, UserActivity.class);
                 intent.putExtra("username",username);
@@ -72,6 +78,7 @@ public class PostListActivity extends AppCompatActivity {
 
             String info = dis.readUTF();
             final String[] titles = info.split("\u999f");
+            if (titles[0].equals("")) return;
             info = dis.readUTF();
             final String[] ids = info.split("\u999f");
 
@@ -79,19 +86,26 @@ public class PostListActivity extends AppCompatActivity {
                     android.R.layout.simple_list_item_1,  // 子项布局id
                     titles);
 
-            ListView listView = (ListView)findViewById(R.id.postListView);
+            final ListView listView = (ListView)findViewById(R.id.postListView);
 
             listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    listView.setEnabled(false);
                     showPost((String)ids[position]);
+                    listView.setEnabled(true);
                 }
             });
 
         } catch (IOException e) {
             e.printStackTrace();
+            AlertDialog.Builder builder = new AlertDialog.Builder(PostListActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("连接失败");
+            builder.setPositiveButton("确认", null);
+            builder.show();
         } finally {
             try {
                 if (s != null) s.close();
@@ -122,6 +136,11 @@ public class PostListActivity extends AppCompatActivity {
 
         } catch (IOException e) {
             e.printStackTrace();
+            AlertDialog.Builder builder = new AlertDialog.Builder(PostListActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("连接失败");
+            builder.setPositiveButton("确认", null);
+            builder.show();
         } finally {
             try {
                 if (s != null) s.close();

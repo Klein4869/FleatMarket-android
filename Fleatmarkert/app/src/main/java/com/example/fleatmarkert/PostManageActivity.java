@@ -34,6 +34,9 @@ import java.util.Map;
 
 public class PostManageActivity extends AppCompatActivity {
 
+    private long lastClickTime = 0;
+    private static final long FAST_CLICK_TIME = 500;
+
     String username;
 
     private HashMap<Integer, String> idToTitle = new HashMap<Integer, String>();
@@ -55,10 +58,14 @@ public class PostManageActivity extends AppCompatActivity {
 
         getMines();
 
-        Button button = (Button) findViewById(R.id.AddButton);
+        final Button button = (Button) findViewById(R.id.AddButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (System.currentTimeMillis() - lastClickTime < FAST_CLICK_TIME) {
+                    return;
+                }
+                lastClickTime = System.currentTimeMillis();
                 Intent intent = new Intent();
                 intent.setClass(PostManageActivity.this, AddPostActivity.class);
                 intent.putExtra("username", username);
@@ -116,12 +123,21 @@ public class PostManageActivity extends AppCompatActivity {
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (System.currentTimeMillis()-lastClickTime<FAST_CLICK_TIME){
+                        return;
+                    }
+                    lastClickTime=System.currentTimeMillis();
                     showPost((String) mData.get(position).get("id"));
                 }
             });
 
         } catch (IOException e) {
             e.printStackTrace();
+            AlertDialog.Builder builder = new AlertDialog.Builder(PostManageActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("连接失败");
+            builder.setPositiveButton("确认", null);
+            builder.show();
         } finally {
             if (s != null) {
                 try {
@@ -166,6 +182,7 @@ public class PostManageActivity extends AppCompatActivity {
     public final class ViewHolder {
         public TextView title;
         public Button showButton;
+        public Button editButton;
         public Button deleteButton;
     }
 
@@ -200,6 +217,7 @@ public class PostManageActivity extends AppCompatActivity {
                 viewHolder.title = (TextView) convertView.findViewById(R.id.title);
                 viewHolder.deleteButton = (Button) convertView.findViewById(R.id.deleteButton);
                 viewHolder.showButton = (Button) convertView.findViewById(R.id.showButton);
+                viewHolder.editButton = (Button) convertView.findViewById(R.id.editButton);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -209,15 +227,75 @@ public class PostManageActivity extends AppCompatActivity {
             viewHolder.showButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showPost((String)mData.get(position).get("id"));
+                    if (System.currentTimeMillis() - lastClickTime < FAST_CLICK_TIME) {
+                        return;
+                    }
+                    lastClickTime = System.currentTimeMillis();
+                    showPost((String) mData.get(position).get("id"));
+                }
+            });
+            viewHolder.editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (System.currentTimeMillis() - lastClickTime < FAST_CLICK_TIME) {
+                        return;
+                    }
+                    lastClickTime = System.currentTimeMillis();
+                    Socket s = null;
+                    try {
+                        s = new Socket("123.56.4.12", 8086);
+
+                        InputStream is = s.getInputStream();
+                        DataInputStream dis = new DataInputStream(is);
+
+                        OutputStream os = s.getOutputStream();
+                        DataOutputStream dos = new DataOutputStream(os);
+
+                        String id = (String)mData.get(position).get("id");
+                        dos.writeUTF(id);
+
+                        String title_info = dis.readUTF();
+                        String content_info = dis.readUTF();
+
+                        Intent intent = new Intent();
+                        intent.setClass(PostManageActivity.this, EditPostActivity.class);
+                        intent.putExtra("title",title_info);
+                        intent.putExtra("content",content_info);
+                        intent.putExtra("id",(String)mData.get(position).get("id"));
+
+                        PostManageActivity.this.startActivity(intent);
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PostManageActivity.this);
+                        builder.setTitle("提示");
+                        builder.setMessage("连接失败");
+                        builder.setPositiveButton("确认", null);
+                        builder.show();
+                    } finally {
+                        try {
+                            if (s != null) s.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             });
             viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (System.currentTimeMillis() - lastClickTime < FAST_CLICK_TIME) {
+                        return;
+                    }
+                    lastClickTime = System.currentTimeMillis();
                     new AlertDialog.Builder(PostManageActivity.this).setTitle("提示").setMessage("确定要删除吗").setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            if (System.currentTimeMillis() - lastClickTime < FAST_CLICK_TIME) {
+                                return;
+                            }
+                            lastClickTime = System.currentTimeMillis();
                             Socket s = null;
                             try {
                                 s = new Socket("123.56.4.12", 8085);
@@ -240,6 +318,11 @@ public class PostManageActivity extends AppCompatActivity {
 
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                AlertDialog.Builder builder = new AlertDialog.Builder(PostManageActivity.this);
+                                builder.setTitle("提示");
+                                builder.setMessage("连接失败");
+                                builder.setPositiveButton("确认", null);
+                                builder.show();
                             } finally {
                                 if (s != null) {
                                     try {

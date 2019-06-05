@@ -15,20 +15,28 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class AddPostActivity extends AppCompatActivity {
+public class EditPostActivity extends AppCompatActivity {
 
     private long lastClickTime = 0;
     private static final long FAST_CLICK_TIME = 500;
 
+    String id;
     String username;
+    String titlepre;
+    String contentpre;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_post);
+        setContentView(R.layout.activity_edit_post);
 
         try{
+            id = getIntent().getExtras().getString("id");
             username = getIntent().getExtras().getString("username");
+            titlepre = getIntent().getExtras().getString("title");
+            contentpre = getIntent().getExtras().getString("content");
+            ((EditText)findViewById(R.id.titleText)).setText(titlepre);
+            ((EditText)findViewById(R.id.contentText)).setText(contentpre);
         } catch (NullPointerException e){
             e.printStackTrace();
         }
@@ -44,18 +52,18 @@ public class AddPostActivity extends AppCompatActivity {
                 String title = ((EditText)findViewById(R.id.titleText)).getText().toString();
                 String content = ((EditText)findViewById(R.id.contentText)).getText().toString();
                 if (!title.equals("")&&!content.equals("")) {
-                    add(title, content);
+                    edit(id, title, content);
                 } else{
-                    new AlertDialog.Builder(AddPostActivity.this).setTitle("提示").setMessage("标题和内容都不能为空!").setPositiveButton("确定",null).show();
+                    new AlertDialog.Builder(EditPostActivity.this).setTitle("提示").setMessage("标题和内容都不能为空!").setPositiveButton("确定",null).show();
                 }
             }
         });
     }
 
-    private void add(String title, String content){
+    private void edit(String id,String title, String content){
         Socket s = null;
         try{
-            s = new Socket("123.56.4.12", 8084);
+            s = new Socket("123.56.4.12", 8087);
 
             InputStream is = s.getInputStream();
             DataInputStream dis = new DataInputStream(is);
@@ -63,25 +71,32 @@ public class AddPostActivity extends AppCompatActivity {
             OutputStream os = s.getOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
 
+            dos.writeUTF(id);
             dos.writeUTF(title);
             dos.writeUTF(content);
-            dos.writeUTF(username);
 
             String info = dis.readUTF();
 
             if (info.equals("True")){
-                AlertDialog.Builder builder = new AlertDialog.Builder(AddPostActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditPostActivity.this);
                 builder.setTitle("提示");
-                builder.setMessage("发布成功，即将返回个人主页");
+                builder.setMessage("修改成功，即将返回个人主页");
                 builder.show();
                 SystemClock.sleep(2000);
-                AddPostActivity.this.finish();
+                EditPostActivity.this.finish();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditPostActivity.this);
+                builder.setTitle("提示");
+                builder.setMessage("修改失败").setPositiveButton("确定",null);
+                builder.show();
+                SystemClock.sleep(2000);
+                EditPostActivity.this.finish();
             }
 
 
         } catch (IOException e){
             e.printStackTrace();
-            AlertDialog.Builder builder = new AlertDialog.Builder(AddPostActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(EditPostActivity.this);
             builder.setTitle("提示");
             builder.setMessage("连接失败");
             builder.setPositiveButton("确认", null);

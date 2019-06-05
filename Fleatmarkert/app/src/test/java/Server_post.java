@@ -21,7 +21,7 @@ public class Server_post {
     private static void listen(){
         Connection conn = null;
         ServerSocket ss = null;
-        String url = "jdbc:mysql://localhost:3306/Users?user=root&password=Wzq213thd";
+        String url = "jdbc:mysql://localhost:3306/Users?userUnicode=true&&characterEncoding=UTF-8&&user=root&password=Wzq213thd";
         try {
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("成功加载数据库驱动程序");
