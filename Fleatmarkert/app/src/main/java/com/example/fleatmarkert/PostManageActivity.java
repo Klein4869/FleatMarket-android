@@ -10,55 +10,52 @@ import android.widget.ListView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
-public class PostListActivity extends AppCompatActivity {
+public class PostManageActivity extends AppCompatActivity {
 
     String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_postlist);
+        setContentView(R.layout.activity_post_manage);
 
-        try {
+        try{
             username = getIntent().getExtras().getString("username");
         } catch (NullPointerException e){
             e.printStackTrace();
         }
 
-        getTitles();
+        getMines();
 
-        Button button = (Button)findViewById(R.id.toManageButton);
+        Button button = (Button)findViewById(R.id.AddButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(PostListActivity.this, UserActivity.class);
+                intent.setClass(PostManageActivity.this,AddPostActivity.class);
                 intent.putExtra("username",username);
-                PostListActivity.this.startActivity(intent);
+                PostManageActivity.this.startActivity(intent);
             }
         });
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        getTitles();
+        getMines();
     }
 
-    /**
-     * 获取帖子标题并显示
-     */
-    private void getTitles(){
+    private void getMines(){
         Socket s = null;
-        try {
-            s = new Socket("123.56.4.12", 8082);
+
+        try{
+            s = new Socket("123.56.4.12", 8083);
 
             InputStream is = s.getInputStream();
             DataInputStream dis = new DataInputStream(is);
@@ -66,30 +63,30 @@ public class PostListActivity extends AppCompatActivity {
             OutputStream os = s.getOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
 
-            dos.writeUTF("请求帖子列表");
+            dos.writeUTF(username);
 
             String info = dis.readUTF();
+
             String[] titles = info.split("\u999f");
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(PostListActivity.this,   // Context上下文
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(PostManageActivity.this,   // Context上下文
                     android.R.layout.simple_list_item_1,  // 子项布局id
                     titles);
 
-            ListView listView = (ListView)findViewById(R.id.postListView);
+            ListView listView = (ListView)findViewById(R.id.myPostListView);
 
             listView.setAdapter(adapter);
 
-        } catch (IOException e) {
+        } catch (IOException e){
             e.printStackTrace();
         } finally {
-            try {
-                if (s != null) s.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (s!=null){
+                try {
+                    s.close();
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
-
-
-
 }

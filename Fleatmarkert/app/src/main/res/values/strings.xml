@@ -9,4 +9,9 @@
     <string name="signInButton">登录</string>
     <string name="signUpButton">注册</string>
     <string name="repasswordMessage">再输入密码</string>
+    <string name="myPostMessage">我的商品</string>
+    <string name="addButtonMessage">添加商品</string>
+    <string name="titleMessage">标题</string>
+    <string name="contentMessage">内容及联系方式</string>
+    <string name="submitMessage">提交</string>
 </resources>

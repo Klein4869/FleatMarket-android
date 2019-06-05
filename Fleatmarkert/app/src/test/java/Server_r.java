@@ -22,7 +22,6 @@ public class Server_r {
     private static void listen(){
         Connection conn = null;
         ServerSocket ss = null;
-        ServerSocket ssr = null;
         String url = "jdbc:mysql://localhost:3306/Users?user=root&password=Wzq213thd";
         try {
             Class.forName("com.mysql.jdbc.Driver");

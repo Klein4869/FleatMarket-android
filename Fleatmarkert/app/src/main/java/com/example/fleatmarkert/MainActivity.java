@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 ServerSocket ss = null;
                 boolean isCheck = verifyLogin(((EditText) findViewById(R.id.usernameText)).getText().toString(), ((EditText) findViewById(R.id.passwordText)).getText().toString());
                 if (isCheck) {
+                    intent1.putExtra("username",((EditText) findViewById(R.id.usernameText)).getText().toString());
                     MainActivity.this.startActivity(intent1);
                     MainActivity.this.finish();
                 } else {
@@ -71,14 +72,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case (1): {
-                EditText editText = (EditText) findViewById(R.id.usernameText);
-                String username=data.getExtras().getString("username");
-                if (username!=null)
-                    editText.setText(username);
-                EditText editText1 = (EditText) findViewById(R.id.passwordText);
-                String password=data.getExtras().getString("password");
-                if (username!=null)
-                    editText.setText(username);
+                try {
+                    EditText editText = (EditText) findViewById(R.id.usernameText);
+                    String username = data.getExtras().getString("username");
+                    if (username != null)
+                        editText.setText(username);
+                    EditText editText1 = (EditText) findViewById(R.id.passwordText);
+                    String password = data.getExtras().getString("password");
+                    if (password != null)
+                        editText1.setText(username);
+                } catch (NullPointerException e){
+                    e.printStackTrace();
+                }
             }
         }
     }
