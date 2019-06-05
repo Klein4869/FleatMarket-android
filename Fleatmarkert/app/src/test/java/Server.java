@@ -1,5 +1,3 @@
-package com.example.fleatmarkert;
-
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,6 +20,11 @@ import javax.xml.transform.Result;
 
 public class Server {
     public static void main(String[] args) {
+        while (true)
+            listen();
+
+    }
+    private static void listen(){
         Connection conn = null;
         ServerSocket ss = null;
         ServerSocket ssr = null;
@@ -37,18 +40,24 @@ public class Server {
 
             InputStream is = s1.getInputStream();
             DataInputStream dis = new DataInputStream(is);
+            System.out.println("进入监听");
             while (true) {
                 String username = dis.readUTF();
                 String password = dis.readUTF();
                 System.out.println(username);
                 System.out.println(password);
 
-                String sql = "select * from users where username="+username+" and password="+password;
                 Statement statement = conn.createStatement();
+                String sql = "use Users;";
+                statement.execute(sql);
+
+                sql = "select * from users where username='"+username+"' and password='"+password+"';";
                 ResultSet result = statement.executeQuery(sql);
-                if (result!=null){
+                if (result.next()){
+                    System.out.println("登录成功");
                     dos.writeUTF("True");
                 } else {
+                    System.out.println("登录失败");
                     dos.writeUTF("False");
                 }
             }
@@ -63,13 +72,11 @@ public class Server {
             try {
                 if (ss != null) {
                     ss.close();
-                    System.out.println("服务端关闭");
+                    System.out.println("一次监听完毕");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
-
 }

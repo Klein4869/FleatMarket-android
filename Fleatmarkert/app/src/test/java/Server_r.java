@@ -1,7 +1,6 @@
-package com.example.fleatmarkert;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +14,12 @@ import java.sql.Statement;
 
 public class Server_r {
     public static void main(String[] args) {
+        while (true) {
+            listen();
+        }
+    }
+
+    private static void listen(){
         Connection conn = null;
         ServerSocket ss = null;
         ServerSocket ssr = null;
@@ -30,20 +35,28 @@ public class Server_r {
 
             InputStream is = s1.getInputStream();
             DataInputStream dis = new DataInputStream(is);
+
+            System.out.println("进入监听");
             while (true) {
                 String username = dis.readUTF();
                 String password = dis.readUTF();
                 System.out.println(username);
                 System.out.println(password);
 
-                String sql = "select * from users where username="+username;
                 Statement statement = conn.createStatement();
+                String sql = "use Users;";
+                statement.execute(sql);
+
+                sql = "select * from users where username='"+username+"';";
                 ResultSet result = statement.executeQuery(sql);
-                if (result!=null){
+                if (result.next()){
                     dos.writeUTF("False");
+                    System.out.println("用户信息无法插入！");
                 } else {
-                    String registSql = "insert into users values("+username+","+password+")";
+                    String registSql = "insert into users values('"+username+"','"+password+"');";
+                    statement.execute(registSql);
                     dos.writeUTF("True");
+                    System.out.println("用户信息插入完毕");
                 }
             }
 
@@ -53,11 +66,12 @@ public class Server_r {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+        }
+        finally {
             try {
                 if (ss != null) {
                     ss.close();
-                    System.out.println("服务端关闭");
+                    System.out.println("监听一次完毕");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,7 +1,9 @@
 package com.example.fleatmarkert;
 
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         final Intent intent1 = new Intent();
         intent1.setClass(MainActivity.this, PostListActivity.class);
@@ -37,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
                 if (isCheck) {
                     MainActivity.this.startActivity(intent1);
                     MainActivity.this.finish();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("提示");
+                    builder.setMessage("登录失败");
+                    builder.setPositiveButton("确认", null);
+                    builder.show();
                 }
             }
         });
@@ -60,9 +72,13 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case (1): {
                 EditText editText = (EditText) findViewById(R.id.usernameText);
-                editText.setText(data.getStringExtra("username"));
+                String username=data.getExtras().getString("username");
+                if (username!=null)
+                    editText.setText(username);
                 EditText editText1 = (EditText) findViewById(R.id.passwordText);
-                editText1.setText(data.getStringExtra("password"));
+                String password=data.getExtras().getString("password");
+                if (username!=null)
+                    editText.setText(username);
             }
         }
     }

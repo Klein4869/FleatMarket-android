@@ -1,6 +1,7 @@
 package com.example.fleatmarkert;
 
 import android.content.Intent;
+import android.os.SystemClock;
 import android.os.Trace;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -34,13 +35,13 @@ public class RegistActivity extends AppCompatActivity {
                 if (isCheck) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
                     builder.setTitle("提示");
-                    builder.setMessage("恭喜您注册成功，确认回到登录页面登录");
-                    builder.setPositiveButton("确认", null);
+                    builder.setMessage("恭喜您注册成功，即将回到登录页面登录");
                     builder.show();
+                    SystemClock.sleep(1000);
                     Intent intent = new Intent();
-                    intent.setClass(RegistActivity.this, MainActivity.class);
                     intent.putExtra("username", username);
                     intent.putExtra("password", password);
+                    setResult(1, intent);
                     RegistActivity.this.finish();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
