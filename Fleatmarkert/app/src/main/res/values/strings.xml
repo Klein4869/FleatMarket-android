@@ -15,4 +15,5 @@
     <string name="contentMessage">内容及联系方式</string>
     <string name="submitMessage">提交</string>
     <string name="deleteMessage">删除</string>
+    <string name="showMessage">查看</string>
 </resources>

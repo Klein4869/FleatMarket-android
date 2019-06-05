@@ -11,14 +11,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Server_post {
+public class Server_show {
     public static void main(String[] args) {
         while (true){
             listen();
         }
     }
 
-    private static void listen(){
+    private static void listen() {
         Connection conn = null;
         ServerSocket ss = null;
         String url = "jdbc:mysql://localhost:3306/Users?user=root&password=Wzq213thd";
@@ -26,7 +26,7 @@ public class Server_post {
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("成功加载数据库驱动程序");
             conn = DriverManager.getConnection(url);
-            ss = new ServerSocket(8082);
+            ss = new ServerSocket(8086);
             Socket s1 = ss.accept();
             OutputStream os = s1.getOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
@@ -36,32 +36,24 @@ public class Server_post {
 
             System.out.println("进入监听");
             while (true) {
-                String message = dis.readUTF();
-                System.out.println(message);
+                String id = dis.readUTF();
+                System.out.println(id);
 
                 Statement statement = conn.createStatement();
                 String sql = "use Users;";
                 statement.execute(sql);
 
-                sql = "select * from posts;";
+                sql = "select * from posts where id="+id+";";
                 ResultSet result = statement.executeQuery(sql);
-                String titles="";
-                String ids="";
+                String title=null;
+                String content=null;
                 while (result.next()){
-                    if (!titles.equals("")) {
-                        titles = titles + "\u999f";
-                    }
-                    if (!ids.equals("")) {
-                        ids = ids + "\u999f";
-                    }
-                    int id = result.getInt("id");
-                    String title = result.getString("title");
-                    titles = titles + title;
-                    ids = ids + id;
-                    System.out.println("返回了一条信息");
+                    title = result.getString("title");
+                    content = result.getString("content");
                 }
-                dos.writeUTF(titles);
-                dos.writeUTF(ids);
+                assert title!=null;
+                dos.writeUTF(title);
+                dos.writeUTF(content);
             }
 
         } catch (IOException e) {
@@ -70,8 +62,7 @@ public class Server_post {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 if (ss != null) {
                     ss.close();

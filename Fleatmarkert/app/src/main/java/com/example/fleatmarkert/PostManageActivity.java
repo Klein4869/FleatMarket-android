@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -46,21 +47,21 @@ public class PostManageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_manage);
 
-        try{
+        try {
             username = getIntent().getExtras().getString("username");
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
         getMines();
 
-        Button button = (Button)findViewById(R.id.AddButton);
+        Button button = (Button) findViewById(R.id.AddButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(PostManageActivity.this,AddPostActivity.class);
-                intent.putExtra("username",username);
+                intent.setClass(PostManageActivity.this, AddPostActivity.class);
+                intent.putExtra("username", username);
                 PostManageActivity.this.startActivity(intent);
             }
         });
@@ -72,10 +73,10 @@ public class PostManageActivity extends AppCompatActivity {
         getMines();
     }
 
-    private void getMines(){
+    private void getMines() {
         Socket s = null;
 
-        try{
+        try {
             s = new Socket("123.56.4.12", 8083);
 
             InputStream is = s.getInputStream();
@@ -93,8 +94,8 @@ public class PostManageActivity extends AppCompatActivity {
             String[] ids = info.split("\u999f");
 
             mData = new ArrayList<Map<String, Object>>();
-            for (int i=0 ;i < titles.length;++i) {
-                if (titles[i].equals("")){
+            for (int i = 0; i < titles.length; ++i) {
+                if (titles[i].equals("")) {
                     break;
                 }
                 Map<String, Object> map = new HashMap<String, Object>();
@@ -102,37 +103,76 @@ public class PostManageActivity extends AppCompatActivity {
                 map.put("title", titles[i]);
                 map.put("id", ids[i]);
 
-                idToTitle.put(Integer.parseInt(ids[i]),titles[i]);
+                idToTitle.put(Integer.parseInt(ids[i]), titles[i]);
                 mData.add(map);
             }
 
             MyAdapter myAdapter = new MyAdapter(this);
 
-            lv = (ListView)findViewById(R.id.myPostList);
+            lv = (ListView) findViewById(R.id.myPostList);
 
             lv.setAdapter(myAdapter);
 
-        } catch (IOException e){
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    showPost((String) mData.get(position).get("id"));
+                }
+            });
+
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (s!=null){
+            if (s != null) {
                 try {
                     s.close();
-                } catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    public final class ViewHolder{
+    private void showPost(String id) {
+        Socket s = null;
+        try {
+            s = new Socket("123.56.4.12", 8086);
+
+            InputStream is = s.getInputStream();
+            DataInputStream dis = new DataInputStream(is);
+
+            OutputStream os = s.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+
+            dos.writeUTF(id);
+
+            String title_info = dis.readUTF();
+            String content_info = dis.readUTF();
+
+            new AlertDialog.Builder(PostManageActivity.this).setTitle(title_info).setMessage(content_info).setPositiveButton("确定", null).show();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (s != null) s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public final class ViewHolder {
         public TextView title;
+        public Button showButton;
         public Button deleteButton;
     }
 
-    public class MyAdapter extends BaseAdapter{
+    public class MyAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
-        public MyAdapter(Context context){
+
+        public MyAdapter(Context context) {
             this.mInflater = LayoutInflater.from(context);
         }
 
@@ -154,17 +194,24 @@ public class PostManageActivity extends AppCompatActivity {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
-            if (convertView == null){
+            if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.vlist,null);
-                viewHolder.title = (TextView)convertView.findViewById(R.id.title);
-                viewHolder.deleteButton = (Button)convertView.findViewById(R.id.deleteButton);
+                convertView = mInflater.inflate(R.layout.vlist, null);
+                viewHolder.title = (TextView) convertView.findViewById(R.id.title);
+                viewHolder.deleteButton = (Button) convertView.findViewById(R.id.deleteButton);
+                viewHolder.showButton = (Button) convertView.findViewById(R.id.showButton);
                 convertView.setTag(viewHolder);
             } else {
-                viewHolder = (ViewHolder)convertView.getTag();
+                viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.title.setText((String)mData.get(position).get("title"));
+            viewHolder.title.setText((String) mData.get(position).get("title"));
+            viewHolder.showButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPost((String)mData.get(position).get("id"));
+                }
+            });
             viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -172,7 +219,7 @@ public class PostManageActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Socket s = null;
-                            try{
+                            try {
                                 s = new Socket("123.56.4.12", 8085);
 
                                 InputStream is = s.getInputStream();
@@ -181,30 +228,30 @@ public class PostManageActivity extends AppCompatActivity {
                                 OutputStream os = s.getOutputStream();
                                 DataOutputStream dos = new DataOutputStream(os);
 
-                                String id = (String)mData.get(position).get("id");
+                                String id = (String) mData.get(position).get("id");
                                 System.out.println(id);
 
                                 dos.writeUTF(id);
 
                                 String info = dis.readUTF();
-                                if(info.equals("True")){
-                                    new AlertDialog.Builder(PostManageActivity.this).setTitle("提示").setMessage("删除成功").setPositiveButton("确定",null).show();
+                                if (info.equals("True")) {
+                                    new AlertDialog.Builder(PostManageActivity.this).setTitle("提示").setMessage("删除成功").setPositiveButton("确定", null).show();
                                 }
 
-                            } catch (IOException e){
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             } finally {
-                                if (s!=null){
+                                if (s != null) {
                                     try {
                                         s.close();
-                                    } catch (IOException e){
+                                    } catch (IOException e) {
                                         e.printStackTrace();
                                     }
                                 }
                                 getMines();
                             }
                         }
-                    }).setNegativeButton("取消",null).show();
+                    }).setNegativeButton("取消", null).show();
                 }
             });
 
