@@ -14,4 +14,5 @@
     <string name="titleMessage">标题</string>
     <string name="contentMessage">内容及联系方式</string>
     <string name="submitMessage">提交</string>
+    <string name="deleteMessage">删除</string>
 </resources>

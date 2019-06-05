@@ -36,7 +36,11 @@ public class AddPostActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String title = ((EditText)findViewById(R.id.titleText)).getText().toString();
                 String content = ((EditText)findViewById(R.id.contentText)).getText().toString();
-                add(title, content);
+                if (!title.equals("")&&!content.equals("")) {
+                    add(title, content);
+                } else{
+                    new AlertDialog.Builder(AddPostActivity.this).setTitle("提示").setMessage("标题和内容都不能为空!").setPositiveButton("确定",null).show();
+                }
             }
         });
     }

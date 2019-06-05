@@ -30,25 +30,29 @@ public class RegistActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = ((EditText) findViewById(R.id.rusernameText)).getText().toString();
                 String password = ((EditText) findViewById(R.id.rpasswordText)).getText().toString();
-                boolean isCheck = signUpCheck(username, password, ((EditText) findViewById(R.id.repasswordText)).getText().toString());
+                if (!username.equals("") && !password.equals("")) {
+                    boolean isCheck = signUpCheck(username, password, ((EditText) findViewById(R.id.repasswordText)).getText().toString());
 
-                if (isCheck) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
-                    builder.setTitle("提示");
-                    builder.setMessage("恭喜您注册成功，即将回到登录页面登录");
-                    builder.show();
-                    SystemClock.sleep(1000);
-                    Intent intent = new Intent();
-                    intent.putExtra("username", username);
-                    intent.putExtra("password", password);
-                    setResult(1, intent);
-                    RegistActivity.this.finish();
+                    if (isCheck) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
+                        builder.setTitle("提示");
+                        builder.setMessage("恭喜您注册成功，即将回到登录页面登录");
+                        builder.show();
+                        SystemClock.sleep(1000);
+                        Intent intent = new Intent();
+                        intent.putExtra("username", username);
+                        intent.putExtra("password", password);
+                        setResult(1, intent);
+                        RegistActivity.this.finish();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
+                        builder.setTitle("提示");
+                        builder.setMessage("注册失败，用户名重复，请重新输入");
+                        builder.setPositiveButton("确认", null);
+                        builder.show();
+                    }
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(RegistActivity.this);
-                    builder.setTitle("提示");
-                    builder.setMessage("注册失败，用户名重复，请重新输入");
-                    builder.setPositiveButton("确认", null);
-                    builder.show();
+                    new AlertDialog.Builder(RegistActivity.this).setTitle("提示").setMessage("用户名和密码都不可为空!").setPositiveButton("确定",null);
                 }
 
             }
