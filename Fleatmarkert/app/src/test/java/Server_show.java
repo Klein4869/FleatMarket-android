@@ -13,7 +13,7 @@ import java.sql.Statement;
 
 public class Server_show {
     public static void main(String[] args) {
-        while (true){
+        while (true) {
             listen();
         }
     }
@@ -35,26 +35,24 @@ public class Server_show {
             DataInputStream dis = new DataInputStream(is);
 
             System.out.println("进入监听");
-            while (true) {
-                String id = dis.readUTF();
-                System.out.println(id);
+            String id = dis.readUTF();
+            System.out.println(id);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "select * from posts where id="+id+";";
-                ResultSet result = statement.executeQuery(sql);
-                String title=null;
-                String content=null;
-                while (result.next()){
-                    title = result.getString("title");
-                    content = result.getString("content");
-                }
-                assert title!=null;
-                dos.writeUTF(title);
-                dos.writeUTF(content);
+            sql = "select * from posts where id=" + id + ";";
+            ResultSet result = statement.executeQuery(sql);
+            String title = null;
+            String content = null;
+            while (result.next()) {
+                title = result.getString("title");
+                content = result.getString("content");
             }
+            assert title != null;
+            dos.writeUTF(title);
+            dos.writeUTF(content);
 
         } catch (IOException e) {
             e.printStackTrace();

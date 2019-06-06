@@ -170,6 +170,11 @@ public class PostManageActivity extends AppCompatActivity {
 
         } catch (IOException e) {
             e.printStackTrace();
+            AlertDialog.Builder builder = new AlertDialog.Builder(PostManageActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("连接失败");
+            builder.setPositiveButton("确认", null);
+            builder.show();
         } finally {
             try {
                 if (s != null) s.close();

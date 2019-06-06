@@ -13,7 +13,7 @@ import java.sql.Statement;
 
 public class Server_delete {
     public static void main(String[] args) {
-        while (true){
+        while (true) {
             listen();
         }
     }
@@ -35,24 +35,22 @@ public class Server_delete {
             DataInputStream dis = new DataInputStream(is);
 
             System.out.println("进入监听");
-            while (true) {
-                String id_String = dis.readUTF();
-                int id = Integer.parseInt(id_String);
-                System.out.println(id);
+            String id_String = dis.readUTF();
+            int id = Integer.parseInt(id_String);
+            System.out.println(id);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "delete from posts where id ="+ id +";";
-                int result = statement.executeUpdate(sql);
-                if (result>0){
-                    System.out.println("删除成功");
-                    dos.writeUTF("True");
-                } else {
-                    System.out.println("删除失败");
-                    dos.writeUTF("False");
-                }
+            sql = "delete from posts where id =" + id + ";";
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                System.out.println("删除成功");
+                dos.writeUTF("True");
+            } else {
+                System.out.println("删除失败");
+                dos.writeUTF("False");
             }
 
         } catch (IOException e) {

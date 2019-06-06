@@ -51,6 +51,8 @@ public class RegistActivity extends AppCompatActivity {
                         intent.putExtra("password", password);
                         setResult(1, intent);
                         RegistActivity.this.finish();
+                    } else {
+                        new AlertDialog.Builder(RegistActivity.this).setTitle("提示").setMessage("用户名重复!").setPositiveButton("确定",null).show();
                     }
                 } else {
                     new AlertDialog.Builder(RegistActivity.this).setTitle("提示").setMessage("用户名和密码都不可为空!").setPositiveButton("确定",null).show();

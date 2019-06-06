@@ -24,7 +24,8 @@ public class Server {
             listen();
 
     }
-    private static void listen(){
+
+    private static void listen() {
         Connection conn = null;
         ServerSocket ss = null;
         String url = "jdbc:mysql://localhost:3306/Users?userUnicode=true&&characterEncoding=UTF-8&&user=root&password=Wzq213thd";
@@ -40,25 +41,23 @@ public class Server {
             InputStream is = s1.getInputStream();
             DataInputStream dis = new DataInputStream(is);
             System.out.println("进入监听");
-            while (true) {
-                String username = dis.readUTF();
-                String password = dis.readUTF();
-                System.out.println(username);
-                System.out.println(password);
+            String username = dis.readUTF();
+            String password = dis.readUTF();
+            System.out.println(username);
+            System.out.println(password);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "select * from users where username='"+username+"' and password='"+password+"';";
-                ResultSet result = statement.executeQuery(sql);
-                if (result.next()){
-                    System.out.println("登录成功");
-                    dos.writeUTF("True");
-                } else {
-                    System.out.println("登录失败");
-                    dos.writeUTF("False");
-                }
+            sql = "select * from users where username='" + username + "' and password='" + password + "';";
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next()) {
+                System.out.println("登录成功");
+                dos.writeUTF("True");
+            } else {
+                System.out.println("登录失败");
+                dos.writeUTF("False");
             }
 
         } catch (IOException e) {

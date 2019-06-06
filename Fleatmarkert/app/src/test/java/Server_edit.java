@@ -35,30 +35,27 @@ public class Server_edit {
             DataInputStream dis = new DataInputStream(is);
 
             System.out.println("进入监听");
-            while (true) {
-                String id = dis.readUTF();
-                String title = dis.readUTF();
-                String content = dis.readUTF();
-                System.out.println(id);
-                System.out.println(title);
-                System.out.println(content);
+            String id = dis.readUTF();
+            String title = dis.readUTF();
+            String content = dis.readUTF();
+            System.out.println(id);
+            System.out.println(title);
+            System.out.println(content);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "update posts set title='" + title + "' where id=" + id + ";";
-                int result = statement.executeUpdate(sql);
-                sql = "update posts set content='" + content + "' where id=" + id + ";";
-                int result2 = statement.executeUpdate(sql);
-                if (result != 0 && result2 != 0){
-                    dos.writeUTF("True");
-                    System.out.println("修改成功");
-                } else {
-                    dos.writeUTF("False");
-                    System.out.println("修改失败");
-                }
-
+            sql = "update posts set title='" + title + "' where id=" + id + ";";
+            int result = statement.executeUpdate(sql);
+            sql = "update posts set content='" + content + "' where id=" + id + ";";
+            int result2 = statement.executeUpdate(sql);
+            if (result != 0 && result2 != 0) {
+                dos.writeUTF("True");
+                System.out.println("修改成功");
+            } else {
+                dos.writeUTF("False");
+                System.out.println("修改失败");
             }
 
         } catch (IOException e) {

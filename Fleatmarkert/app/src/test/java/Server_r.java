@@ -19,7 +19,7 @@ public class Server_r {
         }
     }
 
-    private static void listen(){
+    private static void listen() {
         Connection conn = null;
         ServerSocket ss = null;
         String url = "jdbc:mysql://localhost:3306/Users?userUnicode=true&&characterEncoding=UTF-8&&user=root&password=Wzq213thd";
@@ -36,27 +36,25 @@ public class Server_r {
             DataInputStream dis = new DataInputStream(is);
 
             System.out.println("进入监听");
-            while (true) {
-                String username = dis.readUTF();
-                String password = dis.readUTF();
-                System.out.println(username);
-                System.out.println(password);
+            String username = dis.readUTF();
+            String password = dis.readUTF();
+            System.out.println(username);
+            System.out.println(password);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "select * from users where username='"+username+"';";
-                ResultSet result = statement.executeQuery(sql);
-                if (result.next()){
-                    dos.writeUTF("False");
-                    System.out.println("用户信息无法插入！");
-                } else {
-                    String registSql = "insert into users values('"+username+"','"+password+"');";
-                    statement.execute(registSql);
-                    dos.writeUTF("True");
-                    System.out.println("用户信息插入完毕");
-                }
+            sql = "select * from users where username='" + username + "';";
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next()) {
+                dos.writeUTF("False");
+                System.out.println("用户信息无法插入！");
+            } else {
+                String registSql = "insert into users values('" + username + "','" + password + "');";
+                statement.execute(registSql);
+                dos.writeUTF("True");
+                System.out.println("用户信息插入完毕");
             }
 
         } catch (IOException e) {
@@ -65,8 +63,7 @@ public class Server_r {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 if (ss != null) {
                     ss.close();

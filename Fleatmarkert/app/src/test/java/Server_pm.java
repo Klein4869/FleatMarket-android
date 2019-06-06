@@ -34,34 +34,32 @@ public class Server_pm {
             DataInputStream dis = new DataInputStream(is);
 
             System.out.println("进入监听");
-            while (true) {
-                String username = dis.readUTF();
-                System.out.println(username);
+            String username = dis.readUTF();
+            System.out.println(username);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "select * from posts where username='" + username + "';";
-                ResultSet result = statement.executeQuery(sql);
-                String titles = "";
-                String ids = "";
-                while (result.next()) {
-                    if (!titles.equals("")) {
-                        titles = titles + "\u999f";
-                    }
-                    if (!ids.equals("")) {
-                        ids = ids + "\u999f";
-                    }
-                    int id = result.getInt("id");
-                    String title = result.getString("title");
-                    titles = titles + title;
-                    ids = ids + id;
-                    System.out.println("返回了一条信息");
+            sql = "select * from posts where username='" + username + "';";
+            ResultSet result = statement.executeQuery(sql);
+            String titles = "";
+            String ids = "";
+            while (result.next()) {
+                if (!titles.equals("")) {
+                    titles = titles + "\u999f";
                 }
-                dos.writeUTF(titles);
-                dos.writeUTF(ids);
+                if (!ids.equals("")) {
+                    ids = ids + "\u999f";
+                }
+                int id = result.getInt("id");
+                String title = result.getString("title");
+                titles = titles + title;
+                ids = ids + id;
+                System.out.println("返回了一条信息");
             }
+            dos.writeUTF(titles);
+            dos.writeUTF(ids);
 
         } catch (IOException e) {
             e.printStackTrace();

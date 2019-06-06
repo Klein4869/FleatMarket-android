@@ -13,7 +13,7 @@ import java.sql.Statement;
 
 public class Server_add {
     public static void main(String[] args) {
-        while (true){
+        while (true) {
             listen();
         }
     }
@@ -35,30 +35,28 @@ public class Server_add {
             DataInputStream dis = new DataInputStream(is);
 
             System.out.println("进入监听");
-            while (true) {
-                String title = dis.readUTF();
-                String content = dis.readUTF();
-                String username = dis.readUTF();
-                System.out.println(title);
-                System.out.println(username);
+            String title = dis.readUTF();
+            String content = dis.readUTF();
+            String username = dis.readUTF();
+            System.out.println(title);
+            System.out.println(username);
 
-                Statement statement = conn.createStatement();
-                String sql = "use Users;";
-                statement.execute(sql);
+            Statement statement = conn.createStatement();
+            String sql = "use Users;";
+            statement.execute(sql);
 
-                sql = "select max(id) id from posts;";
-                ResultSet result = statement.executeQuery(sql);
-                int id=-1;
-                while (result.next()) {
-                    id = result.getInt("id");
-                    id++;
-                    System.out.println("已生成id");
-                }
-                assert id!=-1;
-                sql = "insert into posts values("+id+",'"+title+"','"+content+"','"+username+"')";
-                statement.execute(sql);
-                dos.writeUTF("True");
+            sql = "select max(id) id from posts;";
+            ResultSet result = statement.executeQuery(sql);
+            int id = -1;
+            while (result.next()) {
+                id = result.getInt("id");
+                id++;
+                System.out.println("已生成id");
             }
+            assert id != -1;
+            sql = "insert into posts values(" + id + ",'" + title + "','" + content + "','" + username + "')";
+            statement.execute(sql);
+            dos.writeUTF("True");
 
         } catch (IOException e) {
             e.printStackTrace();
