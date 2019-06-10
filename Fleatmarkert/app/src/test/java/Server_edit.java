@@ -27,6 +27,7 @@ public class Server_edit {
             System.out.println("成功加载数据库驱动程序");
             conn = DriverManager.getConnection(url);
             ss = new ServerSocket(8087);
+            ss.setSoTimeout(5000);
             Socket s1 = ss.accept();
             OutputStream os = s1.getOutputStream();
             DataOutputStream dos = new DataOutputStream(os);
