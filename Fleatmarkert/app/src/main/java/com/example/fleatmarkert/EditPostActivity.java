@@ -82,14 +82,12 @@ public class EditPostActivity extends AppCompatActivity {
                 builder.setTitle("提示");
                 builder.setMessage("修改成功，即将返回个人主页");
                 builder.show();
-                SystemClock.sleep(2000);
                 EditPostActivity.this.finish();
             } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(EditPostActivity.this);
                 builder.setTitle("提示");
                 builder.setMessage("修改失败").setPositiveButton("确定",null);
                 builder.show();
-                SystemClock.sleep(2000);
                 EditPostActivity.this.finish();
             }
 

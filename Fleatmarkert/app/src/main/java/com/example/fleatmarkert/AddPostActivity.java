@@ -74,7 +74,6 @@ public class AddPostActivity extends AppCompatActivity {
                 builder.setTitle("提示");
                 builder.setMessage("发布成功，即将返回个人主页");
                 builder.show();
-                SystemClock.sleep(2000);
                 AddPostActivity.this.finish();
             }
 

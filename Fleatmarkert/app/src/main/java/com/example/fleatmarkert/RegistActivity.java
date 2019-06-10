@@ -47,7 +47,6 @@ public class RegistActivity extends AppCompatActivity {
                             builder.setTitle("提示");
                             builder.setMessage("恭喜您注册成功，即将回到登录页面登录");
                             builder.show();
-                            SystemClock.sleep(1000);
                             Intent intent = new Intent();
                             intent.putExtra("username", username);
                             intent.putExtra("password", password);
